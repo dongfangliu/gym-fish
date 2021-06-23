@@ -101,7 +101,7 @@ class underwater_agent:
     def set_commands(self, commands:np.array):
         self._dynamics.setCommands(commands[0:-1])
         self.bcu.change(commands[-1])
-        self.apply_buoyancy_force()
+#         self.apply_buoyancy_force()
         self.last_commands = commands
     # This will make the velocity which is to be used in coupling behavior becomes relative to this frame,
     # this is highly important for make all agents have a common ref frame when they undergoes the same fluid domain

@@ -1,8 +1,8 @@
 from sys import path
 from typing import Any, Dict, Tuple
 from .coupled_env import coupled_env
-import gym_fish.envs.lib.pyflare as fl
-import gym_fish.envs.py_util.np_util as np_util 
+from .lib import pyflare as fl
+from .py_util import np_util as np_util 
 import numpy as np
 import os
 import math
@@ -72,6 +72,7 @@ class FishEnvBasic(coupled_env):
         return  done 
 
     def _get_obs(self) -> np.array:
+        self._update_state()
         agent = self.simulator.rigid_solver.get_agent(0)
         proj_pt_local = np.dot(self.world_to_local,np.transpose(self.proj_pt_world-self.body_xyz))
         obs = np.concatenate(
@@ -107,6 +108,7 @@ class FishEnvBasic(coupled_env):
         if self.training:
             self.proj_pt_world = self.goal_pos-self.path_dir*np.dot(rela_vec_to_goal,self.path_dir)
         self.dist_to_path = np.linalg.norm(self.proj_pt_world)
+        self.trajectory_points.append(self.body_xyz)
 
 
     def calc__dist_potential(self):
@@ -138,8 +140,8 @@ class FishEnvBasic(coupled_env):
     def reset(self) -> Any:
         self.resetDynamics()
         self._reset_task()
-        self._update_state()
         self.trajectory_points=[]
+        self._update_state()
         self.dist_potential = self.calc__dist_potential()
         self.close_potential = self.calc__close_potential()
         

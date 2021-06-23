@@ -14,6 +14,7 @@ class fluid_solver:
     def attach(self,_rigid_solver:rigid_solver):
         self._simulator.attachWorld(_rigid_solver._rigid_world)
         self._simulator.commitInit()
+        self._simulator.log()
         self.ok = True
     @property
     def iter_count(self):
@@ -40,10 +41,10 @@ class fluid_solver:
     def save(self,save_fluid=False, save_objects=True,suffix:str="0000"):
         if save_fluid:
             fluid_name = "fluid"+suffix
-            self.simulator.saveFluidData(fluid_name)
+            self._simulator.saveFluidData(fluid_name)
         if save_objects:
             objects_name = "object"+suffix
-            self.simulator.saveObjectsData(objects_name)
+            self._simulator.saveObjectsData(objects_name)
 
 
     

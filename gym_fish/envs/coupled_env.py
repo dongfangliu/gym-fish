@@ -1,16 +1,16 @@
-from typing import Any, Dict, OrderedDict, Tuple
+from typing import Any, Dict, Tuple
 import abc
 import gym
 import os
-import  json
+import json
+import numpy as np
 from gym import error, spaces, utils
 from gym.utils import seeding
-from gym_fish.envs.entities.coupled_sim import coupled_sim
-from gym_fish.envs.entities.fluid_solver import fluid_solver
-from gym_fish.envs.entities.rigid_solver import rigid_solver
-import numpy as np
-import gym_fish.envs.py_util.flare_util as fl_util
-import gym_fish.envs.lib.pyflare as fl
+from .entities.coupled_sim import coupled_sim
+from .entities.fluid_solver import fluid_solver
+from .entities.rigid_solver import rigid_solver
+from .py_util import flare_util as fl_util
+from .lib import pyflare as fl
 
 from gym_fish.envs.visualization.renderer import  renderer
 from gym_fish.envs.visualization.camera import camera

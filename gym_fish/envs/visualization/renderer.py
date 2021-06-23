@@ -16,7 +16,7 @@ class renderer:
         self.meshes = []
         self.light = pointLight(tuple
                                 (camera.center),(1,1,1,0.25))
-        self.ctx = moderngl.create_standalone_context()
+        self.ctx = moderngl.create_standalone_context(backend='egl')
         self.prog = self.ctx.program(
             vertex_shader='''
             #version 330 core

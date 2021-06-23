@@ -1,8 +1,8 @@
 from sys import path
 from typing import Any, Dict, Tuple
 from .coupled_env import coupled_env
-import gym_fish.envs.lib.pyflare as fl
-import gym_fish.envs.py_util.np_util as np_util
+from .lib import pyflare as fl
+from .py_util import np_util as np_util 
 import numpy as np
 import os
 import math
@@ -80,6 +80,7 @@ class FishEnvVel(coupled_env):
 
     def _get_obs(self) -> np.array:
         agent = self.simulator.rigid_solver.get_agent(0)
+        self._update_state()
         obs = np.concatenate(
             (
                 np.array([self.angle_to_target/math.pi]),
@@ -105,6 +106,7 @@ class FishEnvVel(coupled_env):
             self.angle_to_target = -self.angle_to_target
         # in local coordinate
         self.dvel_local = np.dot(self.world_to_local,np.transpose(vel-self.goal_vel))
+        self.trajectory_points.append(self.body_xyz)
 
     def set_task(self, theta, vel):
         agent = self.simulator.rigid_solver.get_agent(0)
