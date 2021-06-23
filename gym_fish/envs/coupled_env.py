@@ -1,6 +1,8 @@
 from typing import Any, Dict, OrderedDict, Tuple
 import abc
 import gym
+import os
+import  json
 from gym import error, spaces, utils
 from gym.utils import seeding
 from gym_fish.envs.entities.coupled_sim import coupled_sim
@@ -9,6 +11,10 @@ from gym_fish.envs.entities.rigid_solver import rigid_solver
 import numpy as np
 import gym_fish.envs.py_util.flare_util as fl_util
 import gym_fish.envs.lib.pyflare as fl
+
+from gym_fish.envs.visualization.renderer import  renderer
+from gym_fish.envs.visualization.camera import camera
+
 def convert_observation_to_space(observation):
     if isinstance(observation, dict):
         space = spaces.Dict(OrderedDict([
@@ -23,20 +29,60 @@ def convert_observation_to_space(observation):
         raise NotImplementedError(type(observation), observation)
 
     return space
+
+def get_full_path(asset_path):
+    if asset_path.startswith("/"):
+        full_path = asset_path
+    else:
+        full_path = os.path.join(os.path.dirname(__file__), asset_path)
+    if not os.path.exists(full_path):
+        raise IOError("File %s does not exist" % full_path)
+    return full_path
+def decode_env_json(env_json:str):
+    env_path = get_full_path(env_json)
+    env_path_folder =os.path.dirname(env_path)
+    with open(env_path) as f:
+        j = json.load(f)
+        rigid_json_name = j["rigid_json"]
+        fluid_json_name = j["fluid_json"]
+        rigid_json = os.path.abspath(os.path.join(env_path_folder,rigid_json_name))
+        fluid_json = os.path.abspath(os.path.join(env_path_folder,fluid_json_name))
+        cam =camera()
+        cam.__dict__ = j["camera"]
+        gl_renderer = renderer(camera=cam)
+        return rigid_json,fluid_json,gl_renderer
+
 class coupled_env(gym.Env):
-    def __init__(self,fluid_json:str,rigid_json:str,gpuId:int,couple_mode:fl.COUPLE_MODE =fl.COUPLE_MODE.TWO_WAY) -> None:
+    def __init__(self,data_folder:str,env_json:str,gpuId:int,couple_mode:fl.COUPLE_MODE =fl.COUPLE_MODE.TWO_WAY) -> None:
         super().__init__()
+
+        if data_folder.startswith("/"):
+            data_folder = os.path.abspath(data_folder)
+        else:
+            data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), data_folder))
+        if not os.path.exists(data_folder):
+            os.makedirs(data_folder)
+        rigid_json,fluid_json,gl_renderer = decode_env_json(env_json=env_json)
         # here init dynamics ,action_space and observation space
         self.fluid_json =fluid_json
         self.rigid_json = rigid_json
         self.gpuId =  gpuId
         self.couple_mode  = couple_mode
         self.resetDynamics()
+        self.gl_renderer= gl_renderer
+        for i in range(self.simulator.rigid_solver.agent_num):
+            self.gl_renderer.add_mesh(self.simulator.rigid_solver.get_agent(i))
         self.seed()
         _obs = self.reset()
         self.action_space = self._get_action_space()
         self.observation_space = convert_observation_to_space(_obs)
 
+    def render(self, mode='human'):
+        img = self.gl_renderer.render()
+        if mode=='human':
+            img.show()
+        elif mode=='rgb_array':
+            return np.array(img)
     def resetDynamics(self):
         fluid_param =fl_util.fluid_param()
         fluid_param.from_json(self.fluid_json)

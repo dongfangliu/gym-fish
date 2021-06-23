@@ -6,15 +6,7 @@ import gym_fish.envs.py_util.np_util as np_util
 import numpy as np
 import os
 import math
-
-def get_full_path(asset_path):
-    if asset_path.startswith("/"):
-        full_path = asset_path
-    else:
-        full_path = os.path.join(os.path.dirname(__file__), asset_path)
-    if not os.path.exists(full_path):
-        raise IOError("File %s does not exist" % full_path)
-    return full_path
+import json
 
 class FishEnvBasic(coupled_env):
     def __init__(self, 
@@ -29,18 +21,9 @@ class FishEnvBasic(coupled_env):
                 theta = np.array([-45,45]),
                 dist_distri_param =np.array([0,0.5]),
                 data_folder = "./data/vis_data/",
-                fluid_json: str='../assets/fluid/fluid_param_0.5.json',
-                rigid_json: str='../assets/rigid/rigids_4_30_new.json',
+                env_json :str = '../assets/env_file/env_basic.json',
                 gpuId: int=0,
                 couple_mode: fl.COUPLE_MODE = fl.COUPLE_MODE.TWO_WAY) -> None:
-        fluid_json = get_full_path(fluid_json)
-        rigid_json = get_full_path(rigid_json)
-        if data_folder.startswith("/"):
-            data_folder = os.path.abspath(data_folder)
-        else:
-            data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), data_folder))
-        if not os.path.exists(data_folder):
-            os.makedirs(data_folder)
         self.wc = wc
         self.wp = wp
         self.wa = wa
@@ -53,7 +36,7 @@ class FishEnvBasic(coupled_env):
         self.radius = radius
         self.training = True
         # use parent's init function to init default env data, like action space and observation space, also init dynamics
-        super().__init__(fluid_json, rigid_json, gpuId, couple_mode=couple_mode)
+        super().__init__(data_folder,env_json, gpuId, couple_mode=couple_mode)
         self.simulator.fluid_solver.set_savefolder(data_folder+'/')
 
 
