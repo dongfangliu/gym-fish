@@ -37,7 +37,6 @@ class FishEnvBasic(coupled_env):
         self.training = True
         # use parent's init function to init default env data, like action space and observation space, also init dynamics
         super().__init__(data_folder,env_json, gpuId, couple_mode=couple_mode)
-        self.simulator.fluid_solver.set_savefolder(data_folder+'/')
 
 
     def _step(self, action) -> None:

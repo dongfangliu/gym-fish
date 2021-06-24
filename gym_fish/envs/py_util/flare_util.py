@@ -1,5 +1,5 @@
 from typing import List
-from gym_fish.envs.lib import pyflare as fl
+from ..lib import pyflare as fl
 from . import json_util
 from . import trajectory_util
 import os

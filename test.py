@@ -1,4 +1,5 @@
 
+import matplotlib.pyplot as plt
 import os
 import time
 import gym
@@ -46,4 +47,5 @@ action = env.action_space.sample()
 # action = env2.action_space.sample()
 # env2.step(action)
 arr = env.render(mode='human')
+env.simulator.save(True,True)
 

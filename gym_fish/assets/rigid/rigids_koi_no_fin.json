@@ -1,7 +1,7 @@
 {
     "skeletons": [
         {
-            "skeleton_file": "../agents/fish_cod_4_30_new.json",
+            "skeleton_file": "../agents/koi_no_fin.json",
             "sample_num": 10000,
             "density":1080,
             "bladder_volume_min":0.4,

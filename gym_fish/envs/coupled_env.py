@@ -11,7 +11,7 @@ from .entities.fluid_solver import fluid_solver
 from .entities.rigid_solver import rigid_solver
 from .py_util import flare_util as fl_util
 from .lib import pyflare as fl
-
+#
 from gym_fish.envs.visualization.renderer import  renderer
 from gym_fish.envs.visualization.camera import camera
 
@@ -47,6 +47,7 @@ def decode_env_json(env_json:str):
         fluid_json_name = j["fluid_json"]
         rigid_json = os.path.abspath(os.path.join(env_path_folder,rigid_json_name))
         fluid_json = os.path.abspath(os.path.join(env_path_folder,fluid_json_name))
+        # return rigid_json,fluid_json
         cam =camera()
         cam.__dict__ = j["camera"]
         gl_renderer = renderer(camera=cam)
@@ -62,16 +63,19 @@ class coupled_env(gym.Env):
             data_folder = os.path.abspath(os.path.join(os.path.dirname(__file__), data_folder))
         if not os.path.exists(data_folder):
             os.makedirs(data_folder)
+        self.data_folder = data_folder + '/'
+        print(self.data_folder)
+        #rigid_json,fluid_json = decode_env_json(env_json=env_json)
         rigid_json,fluid_json,gl_renderer = decode_env_json(env_json=env_json)
+        self.gl_renderer= gl_renderer
         # here init dynamics ,action_space and observation space
         self.fluid_json =fluid_json
         self.rigid_json = rigid_json
         self.gpuId =  gpuId
         self.couple_mode  = couple_mode
         self.resetDynamics()
-        self.gl_renderer= gl_renderer
-        for i in range(self.simulator.rigid_solver.agent_num):
-            self.gl_renderer.add_mesh(self.simulator.rigid_solver.get_agent(i))
+        
+            
         self.seed()
         _obs = self.reset()
         self.action_space = self._get_action_space()
@@ -91,6 +95,11 @@ class coupled_env(gym.Env):
         rigid_solv = rigid_solver(rigids_data)
         fluid_solv = fluid_solver(fluid_param = fluid_param,gpuId=self.gpuId,couple_mode=self.couple_mode)
         self.simulator = coupled_sim(fluid_solv,rigid_solv)
+        self.simulator.fluid_solver.set_savefolder(self.data_folder)
+        
+        self.gl_renderer.meshes.clear()
+        for i in range(self.simulator.rigid_solver.agent_num):
+            self.gl_renderer.add_mesh(self.simulator.rigid_solver.get_agent(i))
     
     def _get_action_space(self):
         low = self.simulator.rigid_solver.get_action_lower_limits()

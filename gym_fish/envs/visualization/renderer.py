@@ -17,6 +17,7 @@ class renderer:
         self.light = pointLight(tuple
                                 (camera.center),(1,1,1,0.25))
         self.ctx = moderngl.create_standalone_context(backend='egl')
+        self.ctx.enable(moderngl.DEPTH_TEST | moderngl.CULL_FACE)
         self.prog = self.ctx.program(
             vertex_shader='''
             #version 330 core
@@ -72,6 +73,7 @@ class renderer:
         self.prog['mvp'].write(self.camera.mvp.astype('f4'))
 
         for mesh in self.meshes:
+            mesh.update()
             mesh.vao.render(moderngl.TRIANGLES)
         img = Image.frombytes('RGB', self.fbo.size, self.fbo.read(), 'raw', 'RGB', 0, -1)
         return img
