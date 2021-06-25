@@ -22,14 +22,14 @@ class buoyancy_control_unit:
         self.control_min = control_min
         self.control_max = control_max
     def change(self,delta:float)->None:
-        bladder_volume  =  self.bladder_volume-np.clip(delta,self.control_min,self.control_max)
+        bladder_volume  =  self.bladder_volume+np.clip(delta,self.control_min,self.control_max)
         bladder_volume = np.clip(bladder_volume,self.bladder_volume_min,self.bladder_volume_max)
         self.bladder_volume = bladder_volume
     def reset(self)->None:
         self.bladder_volume = self.bladder_volume_init
     @property
     def diff_from_init(self)->float:
-        return self.bladder_volume-self.bladder_volume_init 
+        return self.bladder_volume_init-self.bladder_volume
 
 class underwater_agent:
     def __init__(self,skeleton_data:flare_util.skeleton_data) -> None:
@@ -101,7 +101,7 @@ class underwater_agent:
     def set_commands(self, commands:np.array):
         self._dynamics.setCommands(commands[0:-1])
         self.bcu.change(commands[-1])
-#         self.apply_buoyancy_force()
+        self.apply_buoyancy_force()
         self.last_commands = commands
     # This will make the velocity which is to be used in coupling behavior becomes relative to this frame,
     # this is highly important for make all agents have a common ref frame when they undergoes the same fluid domain

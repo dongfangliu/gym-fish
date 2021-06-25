@@ -64,7 +64,7 @@ class coupled_env(gym.Env):
         if not os.path.exists(data_folder):
             os.makedirs(data_folder)
         self.data_folder = data_folder + '/'
-        print(self.data_folder)
+        print("visulization data save folder",self.data_folder)
         #rigid_json,fluid_json = decode_env_json(env_json=env_json)
         rigid_json,fluid_json,gl_renderer = decode_env_json(env_json=env_json)
         self.gl_renderer= gl_renderer
@@ -74,7 +74,6 @@ class coupled_env(gym.Env):
         self.gpuId =  gpuId
         self.couple_mode  = couple_mode
         self.resetDynamics()
-        
             
         self.seed()
         _obs = self.reset()
@@ -87,6 +86,10 @@ class coupled_env(gym.Env):
             img.show()
         elif mode=='rgb_array':
             return np.array(img)
+    def save_at_framerate(self,save_objects:bool=True,save_fluid:bool=False,frame_rate=30):
+        if self.simulator.iter_count%self.simulator.iters_at_framerate==0:
+            frame_num=(self.simulator.iter_count / self.simulator.iters_at_framerate)
+            self.simulator.save(save_objects, save_fluid,suffix=str("%05d" % frame_num))
     def resetDynamics(self):
         fluid_param =fl_util.fluid_param()
         fluid_param.from_json(self.fluid_json)

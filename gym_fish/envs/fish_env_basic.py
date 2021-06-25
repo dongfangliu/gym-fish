@@ -44,6 +44,8 @@ class FishEnvBasic(coupled_env):
         while t<self.control_dt:
             self.simulator.iter(action)
             t = t+self.simulator.dt
+            if not self.training:
+                self.save_at_framerate(True,False)
             if(self._get_done() and not self.training):
                 break
     def _get_reward(self, cur_obs, cur_action) :
