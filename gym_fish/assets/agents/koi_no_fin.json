@@ -49,7 +49,7 @@
             },
             "name": "head",
             "springStiffness": 0.0,
-            "type": "planar",
+            "type": "floating",
             "useDynamcis": false,
             "useLimits": false
         },
@@ -67,7 +67,7 @@
                 "friction": 0.0
             },
             "limit": {
-                "effort": [20000],
+                "effort": [2],
                 "lower": [-0.13],
                 "upper": [0.13],
                 "velocity": [10.0]
@@ -92,7 +92,7 @@
                 "friction": 0.0
             },
             "limit": {
-                "effort": [20000],
+                "effort": [2],
                 "lower": [-0.26],
                 "upper": [0.26],
                 "velocity": [10.0]
@@ -117,7 +117,7 @@
                 "friction": 0.0
             },
             "limit": {
-                "effort": [20000],
+                "effort": [2],
                 "lower": [-0.52],
                 "upper": [0.52],
                 "velocity": [10.0]
@@ -142,7 +142,7 @@
                 "friction": 0.0
             },
             "limit": {
-                "effort": [20000],
+                "effort": [2],
                 "lower": [-0.52],
                 "upper": [0.52],
                 "velocity": [10.0]

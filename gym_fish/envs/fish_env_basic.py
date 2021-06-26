@@ -18,7 +18,10 @@ class FishEnvBasic(coupled_env):
                 max_time = 10,
                 done_dist=0.1,
                 radius = 1,
-                theta = np.array([-45,45]),
+                # theta should be in the range of [0,180]
+                theta = np.array([90,90]),
+                # phi should be in the range of [0,360]
+                phi = np.array([45,45]),
                 dist_distri_param =np.array([0,0.5]),
                 data_folder = "./data/vis_data/",
                 env_json :str = '../assets/env_file/env_basic.json',
@@ -29,6 +32,7 @@ class FishEnvBasic(coupled_env):
         self.wa = wa
         self.done_dist = done_dist
         self.theta = theta/180.0*math.pi
+        self.phi = phi/180.0*math.pi
         self.dist_distri_param = dist_distri_param
         self.control_dt=control_dt
         self.action_max = action_max
@@ -68,7 +72,7 @@ class FishEnvBasic(coupled_env):
         done = False 
         done = done or self.simulator.time>self.max_time 
         done = done or np.linalg.norm(self.body_xyz-self.goal_pos)<self.done_dist
-        done = done or np.linalg.norm(self.dist_to_path)>0.8
+        done = done or np.linalg.norm(self.dist_to_path)>0.3
         done = done or (not np.isfinite(self._get_obs()).all())
         return  done 
 
@@ -117,10 +121,11 @@ class FishEnvBasic(coupled_env):
     def calc__close_potential(self):
         return -self.dist_to_path /self.control_dt/4
 
-    def set_task(self,theta,dist):
+    def set_task(self,theta,phi,dist):
         agent = self.simulator.rigid_solver.get_agent(0)
         self.init_pos = agent.com
-        goal_dir = np.array([math.cos(theta),0,math.sin(theta)])
+#         goal_dir = np.array([math.cos(theta),0,math.sin(theta)])
+        goal_dir = np.array([math.sin(theta)*math.cos(phi),math.sin(theta)*math.sin(phi),math.cos(theta)])
         self.goal_pos = self.init_pos+self.radius*goal_dir
         has_sol,start_pts = np_util.generate_traj(self.init_pos,self.goal_pos,dist,visualize=False)
         self.path_start = start_pts[np.random.choice(start_pts.shape[0]),:]
@@ -132,10 +137,12 @@ class FishEnvBasic(coupled_env):
     def _reset_task(self):
 
         theta = self.np_random.uniform(self.theta[0],self.theta[1])
+        phi = self.np_random.uniform(self.phi[0],self.phi[1])
+        
         dist = self.np_random.uniform(self.dist_distri_param[0],self.dist_distri_param[1],size=1)[0]
 #         dist = self.np_random.normal(self.dist_distri_param[0],self.dist_distri_param[1],size=1)[0]
         dist =min(max(0.01,dist),1.0)
-        self.set_task(theta,dist)
+        self.set_task(theta,phi,dist)
 
 
     def reset(self) -> Any:
@@ -148,40 +155,39 @@ class FishEnvBasic(coupled_env):
         
         return self._get_obs()
 
-    # def plot3d(self, title=None, fig_name=None, elev=45, azim=45):
-    #     path_points = np.array([
-    #         self.path_start * (1.0 - t) + self.goal_pos * t for t in np.arange(0.0, 1.0, 1.0 / 100)
-    #
-    #     ])
-    #     trajectory_points = self.trajectory_points
-    #     ax = plt.figure().add_subplot(111, projection='3d')
-    #     X = path_points[:, 0]
-    #     Y = path_points[:, 1]
-    #     Z = path_points[:, 2]
-    #     ax.set_xlabel('x')
-    #     ax.set_ylabel('z')
-    #     ax.set_zlabel('y')
-    #     max_range = np.array([X.max() - X.min(), Y.max() - Y.min(), Z.max() - Z.min()]).max() / 2.0
-    #     mid_x = (X.max() + X.min()) * 0.5
-    #     mid_y = (Y.max() + Y.min()) * 0.5
-    #     mid_z = (Z.max() + Z.min()) * 0.5
-    #     ax.set_xlim(mid_x - max_range, mid_x + max_range)
-    #     ax.set_ylim(mid_z - max_range, mid_z + max_range)
-    #     ax.set_zlim(mid_y - max_range, mid_y + max_range)
-    #     #         if path_points!=None:
-    #     #             ax.scatter3D(xs=[x.data[0] for x in path_points], zs=[x.data[1] for x in path_points], ys=[x.data[2] for x in path_points],c='g')
-    #     ax.scatter3D(xs=X, zs=Y, ys=Z, c='g')
-    #     if trajectory_points != None:
-    #         ax.scatter3D(xs=[x[0] for x in trajectory_points],
-    #                      zs=[x[1] for x in trajectory_points],
-    #                      ys=[x[2] for x in trajectory_points],
-    #                      c=[[0, 0, i / len(trajectory_points)] for i in range(len(trajectory_points))])
-    #     ax.view_init(elev=elev, azim=azim)  # 改变绘制图像的视角,即相机的位置,azim沿着z轴旋转，elev沿着y轴
-    #     ax.set_xlabel('x')
-    #     ax.set_ylabel('z')
-    #     ax.set_zlabel('y')
-    #     if title != None:
-    #         ax.set_title(title)
-    #     if fig_name != None:
-    #         plt.savefig(fig_name)
-    #     plt.show()
+    def plot3d(self, title=None, fig_name=None, elev=45, azim=45):
+        import matplotlib.pyplot as plt  
+        path_points = np.array([
+            self.path_start * (1.0 - t) + self.goal_pos * t for t in np.arange(0.0, 1.0, 1.0 / 100)
+    
+        ])
+        trajectory_points = self.trajectory_points
+        ax = plt.figure().add_subplot(111, projection='3d')
+        X = path_points[:, 0]
+        Y = path_points[:, 1]
+        Z = path_points[:, 2]
+        ax.set_xlabel('x')
+        ax.set_ylabel('z')
+        ax.set_zlabel('y')
+        max_range = np.array([X.max() - X.min(), Y.max() - Y.min(), Z.max() - Z.min()]).max() / 2.0
+        mid_x = (X.max() + X.min()) * 0.5
+        mid_y = (Y.max() + Y.min()) * 0.5
+        mid_z = (Z.max() + Z.min()) * 0.5
+        ax.set_xlim(mid_x - max_range, mid_x + max_range)
+        ax.set_ylim(mid_z - max_range, mid_z + max_range)
+        ax.set_zlim(mid_y - max_range, mid_y + max_range)
+        ax.scatter3D(xs=X, zs=Y, ys=Z, c='g')
+        if trajectory_points != None:
+            ax.scatter3D(xs=[x[0] for x in trajectory_points],
+                         zs=[x[1] for x in trajectory_points],
+                         ys=[x[2] for x in trajectory_points],
+                         c=[[0, 0, i / len(trajectory_points)] for i in range(len(trajectory_points))])
+        ax.view_init(elev=elev, azim=azim)  # 改变绘制图像的视角,即相机的位置,azim沿着z轴旋转，elev沿着y轴
+        ax.set_xlabel('x')
+        ax.set_ylabel('z')
+        ax.set_zlabel('y')
+        if title != None:
+            ax.set_title(title)
+        if fig_name != None:
+            plt.savefig(fig_name)
+        plt.show()
