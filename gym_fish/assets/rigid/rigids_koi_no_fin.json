@@ -6,8 +6,8 @@
             "density":1080,
             "bladder_volume_min":0,
             "bladder_volume_max":2,
-            "bladder_volume_control_min":-0.03,
-            "bladder_volume_control_max":0.03,
+            "bladder_volume_control_min":-0.01,
+            "bladder_volume_control_max":0.01,
             "offset_pos": [
                 0,
                 0,

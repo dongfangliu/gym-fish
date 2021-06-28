@@ -48,9 +48,9 @@ class FishEnvBasic(coupled_env):
         while t<self.control_dt:
             self.simulator.iter(action)
             t = t+self.simulator.dt
-            if not self.training:
+            if self.save:
                 self.save_at_framerate(True,False)
-            if(self._get_done() and not self.training):
+            if(self._get_done() and self.training):
                 break
     def _get_reward(self, cur_obs, cur_action) :
         dist_potential_old = self.dist_potential
@@ -112,14 +112,14 @@ class FishEnvBasic(coupled_env):
         rela_vec_to_goal = self.goal_pos-self.body_xyz
         if self.training:
             self.proj_pt_world = self.goal_pos-self.path_dir*np.dot(rela_vec_to_goal,self.path_dir)
-        self.dist_to_path = np.linalg.norm(self.proj_pt_world)
+        self.dist_to_path = np.linalg.norm(self.proj_pt_world-self.body_xyz)
         self.trajectory_points.append(self.body_xyz)
 
 
     def calc__dist_potential(self):
-        return -self.walk_target_dist /self.control_dt/ 4
+        return -self.walk_target_dist /self.control_dt* 4
     def calc__close_potential(self):
-        return -self.dist_to_path /self.control_dt/4
+        return -self.dist_to_path /self.control_dt*4
 
     def set_task(self,theta,phi,dist):
         agent = self.simulator.rigid_solver.get_agent(0)
