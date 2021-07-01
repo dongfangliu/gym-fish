@@ -19,20 +19,20 @@
     "joints": {
         "joint1": {
             "actuator": "passive",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -47,20 +47,20 @@
         },
         "joint2": {
             "actuator": "passive",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": 0.0,
-                "upper": 0.0,
-                "velocity": 10.0
+                "effort": [2],
+                "lower": [-0.116],
+                "upper": [0.116],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -75,20 +75,20 @@
         },
         "joint3": {
             "actuator": "force",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.116,
-                "upper": 0.116,
-                "velocity": 10.0
+                "effort": [2],
+                "lower": [-0.116],
+                "upper": [0.116],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -103,20 +103,20 @@
         },
         "joint4": {
             "actuator": "force",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -131,20 +131,20 @@
         },
         "joint5": {
             "actuator": "force",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -159,20 +159,20 @@
         },
         "joint6": {
             "actuator": "force",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -187,20 +187,20 @@
         },
         "joint7": {
             "actuator": "force",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -215,20 +215,20 @@
         },
         "joint8": {
             "actuator": "force",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -243,20 +243,20 @@
         },
         "joint9": {
             "actuator": "force",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -271,20 +271,20 @@
         },
         "joint10": {
             "actuator": "passive",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -299,20 +299,20 @@
         },
         "joint11": {
             "actuator": "passive",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -327,20 +327,20 @@
         },
         "joint12": {
             "actuator": "passive",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -355,20 +355,20 @@
         },
         "joint13": {
             "actuator": "passive",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 20000.0,
-                "lower": -0.26,
-                "upper": 0.26,
-                "velocity": 10.0
+                "effort": [2.0],
+                "lower": [-0.26],
+                "upper": [0.26],
+                "velocity": [10.0]
             },
             "mimic": {
                 "joint": "",
@@ -383,20 +383,20 @@
         },
         "joint14": {
             "actuator": "passive",
-            "axis": [
+            "axis": [[
                 0.0,
                 1.0,
                 0.0
-            ],
+            ]],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0
             },
             "limit": {
-                "effort": 0.0,
-                "lower": 0.0,
-                "upper": 0.0,
-                "velocity": 0.0
+                "effort": [0.0],
+                "lower": [0.0],
+                "upper": [0.0],
+                "velocity": [0.0]
             },
             "mimic": {
                 "joint": "",

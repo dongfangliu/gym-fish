@@ -39,6 +39,7 @@ class FishEnvBasic(coupled_env):
         self.max_time = max_time
         self.radius = radius
         self.training = True
+        self.save=False
         # use parent's init function to init default env data, like action space and observation space, also init dynamics
         super().__init__(data_folder,env_json, gpuId, couple_mode=couple_mode)
 
@@ -82,7 +83,8 @@ class FishEnvBasic(coupled_env):
         proj_pt_local = np.dot(self.world_to_local,np.transpose(self.proj_pt_world-self.body_xyz))
         obs = np.concatenate(
             (
-                np.array([self.angle_to_target]),
+                np.array([self.angle_to_target,
+                agent.bcu.bladder_volume]),
                 self.dp_local,
                 proj_pt_local,
                 self.vel_local,
@@ -135,7 +137,8 @@ class FishEnvBasic(coupled_env):
         self.path_start = self.goal_pos-self.path_dir*self.radius
     
     def _reset_task(self):
-
+        agent = self.simulator.rigid_solver.get_agent(0)
+        agent.bcu.reset(randomize=False)
         theta = self.np_random.uniform(self.theta[0],self.theta[1])
         phi = self.np_random.uniform(self.phi[0],self.phi[1])
         

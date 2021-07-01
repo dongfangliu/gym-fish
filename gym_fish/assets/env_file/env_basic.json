@@ -1,5 +1,5 @@
 {
-    "rigid_json": "../rigid/rigids_koi_no_fin.json",
+    "rigid_json": "../rigid/rigids_koi_all_fins.json",
     "fluid_json": "../fluid/fluid_param_0.5.json",
     "camera":{
         "window_size":[800,600],

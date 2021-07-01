@@ -1100,7 +1100,7 @@
     },
     "[link]head::spine": {
       "isIntermediate": false,
-      "mass": 2,
+      "mass": 1,
       "name": "[link]head::spine",
       "radius ": 0.014999999664723873,
       "size": [

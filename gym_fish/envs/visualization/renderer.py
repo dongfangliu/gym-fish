@@ -70,7 +70,7 @@ class renderer:
         self.prog['light_pos'].value = self.light.pos
         self.prog['light_color'] = self.light.color
         self.prog['obj_color'] = (1,1,1)
-        self.prog['mvp'].write(self.camera.mvp.astype('f4'))
+        self.prog['mvp'].write(self.camera.viewProejction.astype('f4'))
 
         for mesh in self.meshes:
             mesh.update()
