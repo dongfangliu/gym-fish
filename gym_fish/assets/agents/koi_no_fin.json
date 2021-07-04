@@ -45,7 +45,7 @@
             },
             "name": "head",
             "springStiffness": 0.0,
-            "type": "floating",
+            "type": "planar",
             "useDynamcis": false,
             "useLimits": false
         },
