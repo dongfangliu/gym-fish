@@ -33,9 +33,10 @@ wa = 0.5
 env=gym.make('fish-basic-v0',
                   gpuId=gpuId,
                         couple_mode=couple_mode,
-             control_dt=control_dt,
+                        control_dt=control_dt,
                         radius=radius,
                        theta=theta,action_max=action_max,
+env_json  = '../assets/env_file/env_collision.json',
                         max_time=max_time,
                         wp=wp,wc=wc,wa=wa,
                        done_dist=done_dist,dist_distri_param=dist_distri_param

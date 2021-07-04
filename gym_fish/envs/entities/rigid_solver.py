@@ -13,12 +13,12 @@ class rigid_solver:
         return self._agents[i]
     def get_action_upper_limits(self)->np.array:
         if self.agent_num>1:
-            return np.concatenate(( a.action_upper_limits for a in self._agents))
+            return np.concatenate([ a.action_upper_limits for a in self._agents])
         else:
             return self._agents[0].action_upper_limits
     def get_action_lower_limits(self)->np.array:
         if self.agent_num>1:
-            return np.concatenate(( a.action_lower_limits for a in self._agents))
+            return np.concatenate([ a.action_lower_limits for a in self._agents])
         else:
             return self._agents[0].action_lower_limits
     def set_commands(self,commands:np.array)->None:

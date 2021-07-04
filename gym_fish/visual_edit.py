@@ -209,7 +209,7 @@ class GLWidget(QtOpenGL.QGLWidget):
     def set_selected_link_sizez(self,v):
         try:
             self.selected_link.size = np.array([
-                self.selected_link.size[0], self.selected_link.size[1]], float(v))
+                self.selected_link.size[0], self.selected_link.size[1], float(v)])
             self.updateGL()
         except:
             pass
@@ -322,6 +322,16 @@ class GLWidget(QtOpenGL.QGLWidget):
         gl.glDetachShader(program, fragment)
         return program
 
+    def distribute_mass_by_size(self):
+        toatlMass=10
+        totalVol=  0
+        for link in self.skeleton.links:
+            totalVol = totalVol+ link.size[0]*link.size[1]*link.size[2]
+        for link in self.skeleton.links:
+            my_size = link.size[0]*link.size[1]*link.size[2]+1e-8
+            link.mass = my_size/totalVol*toatlMass
+
+
     def paintGL(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT|gl.GL_DEPTH_BUFFER_BIT)
         loc = gl.glGetUniformLocation(self.program, "projection_view")
@@ -347,9 +357,13 @@ class GLWidget(QtOpenGL.QGLWidget):
             if joint.name==self.selected_jnt_name:
                 color = (1,0,0,0.4)
             else:
+                color = (0,0,0,0)
+            if self.selected_jnt_name==None:
                 color = (0, 0.4, 0.2, 0.4)
             self.draw(model_mat, color, self.sphere_buffer.VAO, len(self.sphere.data['indices']))
         for link in self.skeleton.links:
+            if link.name != self.selected_link_name:
+                continue
             model_mat = link.getWorldTrans()
             model_mat[:, 0] = model_mat[:, 0] * link.size[0]/2
             model_mat[:, 1] = model_mat[:, 1] * link.size[1]/2
@@ -602,6 +616,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_btn =  QtWidgets.QPushButton("Save")
         self.save_btn.clicked.connect(self.save_skeleton)
         form_layout.addRow(self.save_btn)
+        self.mass_set_btn =  QtWidgets.QPushButton("Distribute mass by Link Size")
+        self.mass_set_btn.clicked.connect(self.glWidget.distribute_mass_by_size)
+        form_layout.addRow(self.mass_set_btn)
         form_layout.addRow(QtWidgets.QLabel("Camera pos x"),x_slider)
         form_layout.addRow(QtWidgets.QLabel("Camera pos y"),y_slider)
         form_layout.addRow(QtWidgets.QLabel("Camera pos z"),z_slider)
@@ -626,7 +643,7 @@ if __name__ == '__main__':
     if len(sys.argv)>=2:
         file_path = str(sys.argv[1])
     else:
-        default_file = str(pathlib.Path(__file__+'/../assets/agents/eel.json').resolve())
+        default_file = str(pathlib.Path(__file__+'/../assets/agents/koi_all_fins.json').resolve())
         print("no json file input, use default :" +default_file)
         file_path =default_file
     if os.path.isfile(file_path):

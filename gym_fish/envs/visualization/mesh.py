@@ -20,6 +20,7 @@ class mesh:
             self.normal = np.array(data.normal)
             self.uv = np.array(data.uv)
             self.indices = np.array(data.indices).astype('uintc')
+
     def update(self):
         self.update_mesh_data()
         self.vbo.write(self.get_vertices_data().astype('f4').tobytes())

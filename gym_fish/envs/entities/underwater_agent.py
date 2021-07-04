@@ -38,10 +38,13 @@ class buoyancy_control_unit:
 class underwater_agent:
     def __init__(self,skeleton_data:flare_util.skeleton_data) -> None:
         self._dynamics = skeleton_data.dynamics
-        self.body_density = skeleton_data.density
+        param = skeleton_data.param
+        self.body_density = param.density
         self.joints = {j.getName():agent_joint(j) for j in self._dynamics.getJoints()}
         self.links = {l.getName():agent_link(l) for l in self._dynamics.getLinks() if l.getName()!='World' and l.getName()!='simple_frame'}
-        self._setup_bcu(skeleton_data.bladder_volume_min,skeleton_data.bladder_volume_max,skeleton_data.bladder_volume_control_min,skeleton_data.bladder_volume_control_max)
+        self.controllable = param.controllable
+        self.has_buoyancy = param.has_buoyancy
+        self._setup_bcu(param.bladder_volume_min,param.bladder_volume_max,param.bladder_volume_control_min,param.bladder_volume_control_max)
     def _setup_bcu(self,bladder_volume_min:float,bladder_volume_max:float,control_min:float,control_max:float):
         self.bcu = buoyancy_control_unit(1,bladder_volume_min,bladder_volume_max,control_min,control_max)
         water_den = 1000
@@ -59,7 +62,13 @@ class underwater_agent:
         return self._dynamics.getMass()
     @property
     def ctrl_dofs(self):
-        return self._dynamics.getNumDofs()+1
+        if not self.controllable:
+            return 0;
+        elif self.has_buoyancy:
+            return self._dynamics.getNumDofs()+1
+        else:
+            return self._dynamics.getNumDofs()
+
     @property
     def com(self):
         return self._dynamics.getCOM()
@@ -98,14 +107,27 @@ class underwater_agent:
         return self._dynamics.accelerations(include_root)    
     @property
     def action_upper_limits(self):
-        return np.append(self._dynamics.getForceUpperLimits(),self.bcu.control_max)
+        if not self.controllable:
+            return np.array([]);
+        elif self.has_buoyancy:
+            return np.append(self._dynamics.getForceUpperLimits(),self.bcu.control_max)
+        else:
+            return self._dynamics.getForceUpperLimits()
     @property
     def action_lower_limits(self):
-        return np.append(self._dynamics.getForceLowerLimits(), self.bcu.control_min)
+        if not self.controllable:
+            return np.array([]);
+        elif self.has_buoyancy:
+            return np.append(self._dynamics.getForceLowerLimits(),self.bcu.control_min)
+        else:
+            return self._dynamics.getForceLowerLimits()
     def set_commands(self, commands:np.array):
+        if not self.controllable:
+            return
         self._dynamics.setCommands(commands[0:-1])
         self.bcu.change(commands[-1])
-#         self.apply_buoyancy_force()
+        if self.has_buoyancy:
+            self.apply_buoyancy_force()
         self.last_commands = commands
     # This will make the velocity which is to be used in coupling behavior becomes relative to this frame,
     # this is highly important for make all agents have a common ref frame when they undergoes the same fluid domain

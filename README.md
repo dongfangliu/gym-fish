@@ -14,7 +14,7 @@ Note this environment is now tested on Ubuntu18.04 and later, not tested on Mac,
 2. Python Environment Setup
 
    1. please not use conda environment due to [ a known render issue](https://github.com/moderngl/moderngl/issues/469) 
-   2. please use Python 3.7.6
+   2. please use Python 3.8.5
 
 ### Basic install (if you just want to use existing environments without changing them)
 

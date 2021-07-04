@@ -100,6 +100,9 @@ class skeleton_param(json_util.json_support):
         super().__init__()
         self.skeleton_file =skeleton_file
         self.sample_num = sample_num
+
+        self.controllable = True
+        self.has_buoyancy = True
         self.density = density
         self.bladder_volume_min = 0
         self.bladder_volume_max= 1
@@ -116,6 +119,7 @@ class skeleton_param(json_util.json_support):
         self.__dict__ = d
         skeleton_file_path = os.path.abspath(os.path.join(filefolder,self.skeleton_file))
         self.skeleton_file = skeleton_file_path
+        self.offset_scale = [1, 1, 1]
         
 
 
@@ -126,10 +130,8 @@ class skeleton_data(json_util.json_support):
         self.param = param
         self.skeleton=None
         self.dynamics =None
-        self.bladder_volume_min = 0
-        self.bladder_volume_max= 1
-        self.bladder_volume_control_min = 0
-        self.bladder_volume_control_max = 0.1
+
+
         self.gpuId = gpuId
         if param!=None:
             self.init_from_setting()
@@ -142,11 +144,6 @@ class skeleton_data(json_util.json_support):
                                             self.param.offset_rotation,
                                             self.param.offset_scale
                                             )
-        self.density = self.param.density
-        self.bladder_volume_min = self.param.bladder_volume_min
-        self.bladder_volume_max= self.param.bladder_volume_max
-        self.bladder_volume_control_min = self.param.bladder_volume_control_min
-        self.bladder_volume_control_max = self.param.bladder_volume_control_max
 
     def to_dict(self) ->dict:
         if self.param!=None:

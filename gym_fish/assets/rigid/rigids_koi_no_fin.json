@@ -2,7 +2,9 @@
     "skeletons": [
         {
             "skeleton_file": "../agents/koi_no_fin.json",
+            "controllable": true,
             "sample_num": 10000,
+            "has_buoyancy": true,
             "density":1080,
             "bladder_volume_min":0,
             "bladder_volume_max":2,
@@ -17,11 +19,6 @@
                 0,
                 0,
                 0
-            ],
-            "offset_scale": [
-                1,
-                1,
-                1
             ]
         }
     ],
