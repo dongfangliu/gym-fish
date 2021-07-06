@@ -18,6 +18,7 @@ conda activate gym_fish
 conda install -c conda-forge moderngl
 ```
 3. Install Fish Gym
+```
 git clone https://github.com/dongfangliu/gym-fish.git
 cd gym-fish
 pip3 install -e .
