@@ -12,29 +12,32 @@ Note this environment is now tested on Ubuntu18.04 and later, not tested on Mac,
   We highly recommend to use latest version of DART and CUDA, specifically, DART 6.10.1 and CUDA 11.0 .
 
 2. Python Environment Setup
-
-   1. please not use conda environment due to [ a known render issue](https://github.com/moderngl/moderngl/issues/469) 
-   2. please use Python 3.8.5
-
-### Basic install (if you just want to use existing environments without changing them)
-
-```shell
-pip3 install --upgrade pip
-pip3 install git+https://github.com/dongfangliu/gym-fish.git
 ```
-
-   ### Full installation (to edit/create environments) using a python virtual environment
-
+conda create -n gym_fish python=3.6.9
+conda activate gym_fish
+conda install -c conda-forge moderngl
 ```
-python3 -m pip install --user virtualenv
-python3 -m venv env
-source env/bin/activate
-pip3 install --upgrade pip
+3. Install Fish Gym
 git clone https://github.com/dongfangliu/gym-fish.git
 cd gym-fish
 pip3 install -e .
 ```
+4.To test the learning compability, you may consider install stable-baselines3
+```
+conda activate gym_fish
+pip3 install `stable-baselines3[extra]`
+```
+
 
 ## Getting Started
 
-TO BE CONTINUED
+Now that we will try to run a basic task environment: point to point navigation.
+```
+import gym
+import gym_fish
+env = gym.make('fish-v0')
+
+action = env.action_space.sample()
+obs,reward,done,info = env.step(action)
+env.render(mode = 'human')
+```
