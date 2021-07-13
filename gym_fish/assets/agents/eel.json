@@ -19,11 +19,18 @@
     "joints": {
         "joint1": {
             "actuator": "passive",
-            "axis": [[
-                0.0,
+            "axis": [
+                [
                 1.0,
+                0.0,
                 0.0
-            ]],
+            ],
+                [
+                0.0,
+                0.0,
+                1.0
+            ]
+                    ],
             "dynamics": {
                 "damping": 0.0,
                 "friction": 0.0

@@ -1,3 +1,6 @@
 gym
 moderngl
 pyrr
+pyopengl
+pyside2
+pathlib

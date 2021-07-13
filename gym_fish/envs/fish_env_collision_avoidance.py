@@ -8,34 +8,24 @@ import os
 import math
 import json
 
-class FishEnvBasic(coupled_env):
+class FishEnvCollisionAvoidance(coupled_env):
     def __init__(self, 
                 control_dt=0.2,
-#                 wc = np.array([0.0,1.0]),
                 wp= np.array([0.0,1.0]),
                 wa=0.5,
+                wc = 0.5,
                 max_time = 10,
-                done_dist=0.1,
-                radius = 1,
-                # theta should be in the range of [0,180]
-                theta = np.array([90,90]),
-                # phi should be in the range of [0,360]
-                phi = np.array([45,45]),
-                dist_distri_param =np.array([0,0.5]),
-                data_folder = "./data/vis_data/",
-                env_json :str = '../assets/env_file/env_basic.json',
+                done_dist=0.05,
+                data_folder = "./vis_data/",
+                env_json :str = '../assets/env_file/env_collision_avoidance.json',
                 gpuId: int=0,
                 couple_mode: fl.COUPLE_MODE = fl.COUPLE_MODE.TWO_WAY) -> None:
-#         self.wc = wc
         self.wp = wp
         self.wa = wa
+        self.wc = wc
         self.done_dist = done_dist
-        self.theta = theta/180.0*math.pi
-        self.phi = phi/180.0*math.pi
-        self.dist_distri_param = dist_distri_param
         self.control_dt=control_dt
         self.max_time = max_time
-        self.radius = radius
         self.save=False
         # use parent's init function to init default env data, like action space and observation space, also init dynamics
         super().__init__(data_folder,env_json, gpuId, couple_mode=couple_mode)
@@ -55,26 +45,22 @@ class FishEnvBasic(coupled_env):
         self.dist_potential = self.calc__dist_potential()
         dist_reward = self.wp[0]*np.exp(-3* (self.walk_target_dist**2))+self.wp[1]*float(self.dist_potential - dist_potential_old)
         
-#         close_potential_old = self.close_potential
-#         self.close_potential = self.calc__close_potential()
-#         close_reward = self.wc[0]*np.exp(-5* self.dist_to_path)+self.wc[1]*float(self.close_potential - close_potential_old)
-        
         cur_action =self.normalize_action(cur_action)
         action_reward = -np.sum(np.abs(cur_action)**0.5)*self.wa
+        collide_reward = -float(self._is_about_to_collide())*self.wc
         
-#         total_reward = dist_reward+close_reward+action_reward
-        total_reward = dist_reward+action_reward
         
-#         info = {'dist_reward':dist_reward,"action_reward":action_reward,'close_reward':close_reward}
-        info = {'dist_reward':dist_reward,"action_reward":action_reward}
+        total_reward = dist_reward+action_reward+collide_reward
+        
+        info = {'dist_reward':dist_reward,"action_reward":action_reward,'collide_reward':collide_reward}
         return min(max(-5,total_reward),5),info
 
     def _get_done(self) -> bool:
         done = False 
         done = done or self.simulator.time>self.max_time 
         done = done or np.linalg.norm(self.body_xyz-self.goal_pos)<self.done_dist
-#         done = done or np.linalg.norm(self.dist_to_path)>0.3
         done = done or (not np.isfinite(self._get_obs()).all())
+#         done = done or self._is_about_to_collide()
         return  done 
     def normalize_action(self,action):
         action_space_mean = (self.action_space.low+self.action_space.high)/2
@@ -84,17 +70,18 @@ class FishEnvBasic(coupled_env):
         self._update_state()
         self.trajectory_points.append(self.body_xyz)
         agent = self.simulator.rigid_solver.get_agent(0)
-#         proj_pt_local = np.dot(self.world_to_local,np.transpose(self.proj_pt_world-self.body_xyz))
         if agent.has_buoyancy:
             scalar_obs  = np.array([self.angle_to_target,
-                agent.bcu.bladder_volume])
+                agent.bcu.bladder_volume,float(self._is_about_to_collide())])
         else:
-            scalar_obs= np.array([self.angle_to_target])
+            scalar_obs= np.array([self.angle_to_target,float(self._is_about_to_collide())])
+#         sensor_data = agent.sensors
+        
         obs = np.concatenate(
             (
                 scalar_obs,
+#                 np.array(sensor_data.velocity).flatten(),
                 self.dp_local,
-#                 proj_pt_local,
                 self.vel_local,
                 agent.positions/0.52,
                 agent.velocities/10,
@@ -102,7 +89,11 @@ class FishEnvBasic(coupled_env):
         if np.isfinite(obs).all():
             self.last_obs = obs
         return self.last_obs
-
+    def _is_about_to_collide(self):
+        for pos in self.collider_positions:
+            if np.linalg.norm(self.body_xyz-pos)< self.collide_radius:
+                return True
+        return False
     def _update_state(self):
         agent = self.simulator.rigid_solver.get_agent(0)
         self.body_xyz =  agent.com
@@ -122,38 +113,18 @@ class FishEnvBasic(coupled_env):
         self.vel_local = np.dot(self.world_to_local,np.transpose(vel))
         
         rela_vec_to_goal = self.goal_pos-self.body_xyz
-#         self.proj_pt_world = self.goal_pos-self.path_dir*np.dot(rela_vec_to_goal,self.path_dir)
-#         self.dist_to_path = np.linalg.norm(self.proj_pt_world-self.body_xyz)
 
 
     def calc__dist_potential(self):
         return -self.walk_target_dist /self.control_dt* 4
-#     def calc__close_potential(self):
-#         return -self.dist_to_path /self.control_dt*4
 
-    def set_task(self,theta,phi,dist):
-        agent = self.simulator.rigid_solver.get_agent(0)
-        self.init_pos = agent.com
-#         goal_dir = np.array([math.cos(theta),0,math.sin(theta)])
-        goal_dir = np.array([math.sin(theta)*math.cos(phi),math.sin(theta)*math.sin(phi),math.cos(theta)])
-        self.goal_pos = self.init_pos+self.radius*goal_dir
-        has_sol,start_pts = np_util.generate_traj(self.init_pos,self.goal_pos,dist,visualize=False)
-        self.path_start = start_pts[np.random.choice(start_pts.shape[0]),:]
-        self.path_start =np.array([self.path_start[0],self.init_pos[1],self.path_start[1]])
-        self.path_dir = self.goal_pos-self.path_start
-        self.path_dir = self.path_dir/np.linalg.norm(self.path_dir)
-        self.path_start = self.goal_pos-self.path_dir*self.radius
-    
     def _reset_task(self):
+        self.init_pos = self.simulator.rigid_solver.get_agent(0).com
+        self.goal_pos = np.array([3,0,0])
+        self.collider_positions = [self.simulator.rigid_solver.get_agent(i).com for i in range(1,self.simulator.rigid_solver.agent_num)]
+        self.collide_radius= 0.3
         agent = self.simulator.rigid_solver.get_agent(0)
         agent.bcu.reset(randomize=False)
-        theta = self.np_random.uniform(self.theta[0],self.theta[1])
-        phi = self.np_random.uniform(self.phi[0],self.phi[1])
-        
-        dist = self.np_random.uniform(self.dist_distri_param[0],self.dist_distri_param[1],size=1)[0]
-#         dist = self.np_random.normal(self.dist_distri_param[0],self.dist_distri_param[1],size=1)[0]
-        dist =min(max(0.01,dist),1.0)
-        self.set_task(theta,phi,dist)
 
 
     def reset(self) -> Any:
@@ -162,14 +133,13 @@ class FishEnvBasic(coupled_env):
         self.trajectory_points=[]
         self._update_state()
         self.dist_potential = self.calc__dist_potential()
-#         self.close_potential = self.calc__close_potential()
         self.last_obs = self._get_obs()
         return self._get_obs()
 
     def plot3d(self, title=None, fig_name=None, elev=45, azim=45):
         import matplotlib.pyplot as plt  
         path_points = np.array([
-            self.path_start * (1.0 - t) + self.goal_pos * t for t in np.arange(0.0, 1.0, 1.0 / 100)
+            self.init_pos * (1.0 - t) + self.goal_pos * t for t in np.arange(0.0, 1.0, 1.0 / 100)
     
         ])
         trajectory_points = self.trajectory_points
