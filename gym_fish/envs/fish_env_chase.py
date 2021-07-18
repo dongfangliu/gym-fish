@@ -20,21 +20,6 @@ from mpl_toolkits import mplot3d
 import traceback
 
 
-def convert_observation_to_space(observation):
-    if isinstance(observation, dict):
-        space = spaces.Dict(OrderedDict([
-            (key, convert_observation_to_space(value))
-            for key, value in observation.items()
-        ]))
-    elif isinstance(observation, np.ndarray):
-        low = np.full(observation.shape, -float('inf'))
-        high = np.full(observation.shape, float('inf'))
-        space = spaces.Box(low, high, dtype=observation.dtype)
-    else:
-        raise NotImplementedError(type(observation), observation)
-
-    return space
-
 
 class FishEnvChase(gym.Env):
     metadata = {}
@@ -233,8 +218,8 @@ class FishEnvChase(gym.Env):
         dp_local = np.dot(self.world_to_local,np.transpose(self.target_xyz-self.body_xyz))
         vel_local = np.dot(self.world_to_local,np.transpose(self.vel))
         
-        joint_pos = self.chase_robot.getPositions(includeBase=False)
-        joint_vel = self.chase_robot.getVelocities(includeBase=False)
+        joint_pos = self.chase_robot.positions
+        joint_vel = self.chase_robot.velocities
         
         
         obs = np.concatenate(
@@ -260,21 +245,11 @@ class FishEnvChase(gym.Env):
         
         self.chase_robot.setHead(np.array([-0.5,0,0]),np.array([1,0,0]))
         
-        self.action_dim = self.chase_robot.getNumDofs()
-        self.free_robot_action_dim = self.chase_robot.getNumDofs()
-#         angle =  self.np_random.uniform(self.vel_theta[0],self.vel_theta[1])
-#         vel =  np.array([math.cos(angle),0,math.sin(angle)])*self.np_random.uniform(self.random_vel[0],self.random_vel[1],size=1)
+        self.action_dim = self.chase_robot._dynamics.getNumDofs()
+        self.free_robot_action_dim = self.chase_robot._dynamics.getNumDofs()
         
-#         skeleton_dynamics.getJoint("head").setVelocity(0,vel[0])
-#         skeleton_dynamics.getJoint("head").setVelocity(1,vel[1])
-# #         skeleton_dynamics.getJoint("head").setPosition(2,self.np_random.uniform(-0.52,0.52,size=1))
-#         joint_list =['spine','spine01','spine02','spine03']
-#         for jnt_name in joint_list:
-#             skeleton_dynamics.getJoint(jnt_name).setPosition(0,self.np_random.uniform(-0.52,0.52,size=1))
-#             skeleton_dynamics.getJoint(jnt_name).setVelocity(0,self.np_random.uniform(-10,10,size=1))
-#         skeleton_dynamics.update()
-        frame = self.free_robot.getBaseLink().getFrame()
-        self.chase_robot.setRefFrame(frame)
+        frame = self.free_robot.baselink().body_frame
+        self.chase_robot.set_ref_frame(frame)
         
         self.body_xyz = self.chase_robot.getBaseLink().getPosition()
         self.init_pos = self.body_xyz

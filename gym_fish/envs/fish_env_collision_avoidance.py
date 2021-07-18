@@ -47,11 +47,12 @@ class FishEnvCollisionAvoidance(coupled_env):
         
         cur_action =self.normalize_action(cur_action)
         action_reward = -np.sum(np.abs(cur_action)**0.5)*self.wa
-        collide_reward = -float(self._is_about_to_collide())*self.wc
+        collide_reward = -self.collide_count *self.wc
         
         
         total_reward = dist_reward+action_reward+collide_reward
-        
+        # reset for counting next control periods' collided count
+        self.collide_count =0
         info = {'dist_reward':dist_reward,"action_reward":action_reward,'collide_reward':collide_reward}
         return min(max(-5,total_reward),5),info
 
@@ -72,9 +73,9 @@ class FishEnvCollisionAvoidance(coupled_env):
         agent = self.simulator.rigid_solver.get_agent(0)
         if agent.has_buoyancy:
             scalar_obs  = np.array([self.angle_to_target,
-                agent.bcu.bladder_volume,float(self._is_about_to_collide())])
+                agent.bcu.bladder_volume,float(self.collide_count )])
         else:
-            scalar_obs= np.array([self.angle_to_target,float(self._is_about_to_collide())])
+            scalar_obs= np.array([self.angle_to_target,float(self.collide_count )])
 #         sensor_data = agent.sensors
         
         obs = np.concatenate(
@@ -89,11 +90,6 @@ class FishEnvCollisionAvoidance(coupled_env):
         if np.isfinite(obs).all():
             self.last_obs = obs
         return self.last_obs
-    def _is_about_to_collide(self):
-        for pos in self.collider_positions:
-            if np.linalg.norm(self.body_xyz-pos)< self.collide_radius:
-                return True
-        return False
     def _update_state(self):
         agent = self.simulator.rigid_solver.get_agent(0)
         self.body_xyz =  agent.com
@@ -111,7 +107,7 @@ class FishEnvCollisionAvoidance(coupled_env):
         #in local coordinate
         self.dp_local = np.dot(self.world_to_local,np.transpose(self.goal_pos-self.body_xyz))
         self.vel_local = np.dot(self.world_to_local,np.transpose(vel))
-        
+        self.collide_count = self.collide_count + float(agent.collided)
         rela_vec_to_goal = self.goal_pos-self.body_xyz
 
 
@@ -122,15 +118,16 @@ class FishEnvCollisionAvoidance(coupled_env):
         self.init_pos = self.simulator.rigid_solver.get_agent(0).com
         self.goal_pos = np.array([3,0,0])
         self.collider_positions = [self.simulator.rigid_solver.get_agent(i).com for i in range(1,self.simulator.rigid_solver.agent_num)]
-        self.collide_radius= 0.3
         agent = self.simulator.rigid_solver.get_agent(0)
         agent.bcu.reset(randomize=False)
 
 
     def reset(self) -> Any:
+        
         self.resetDynamics()
         self._reset_task()
         self.trajectory_points=[]
+        self.collide_count  = 0
         self._update_state()
         self.dist_potential = self.calc__dist_potential()
         self.last_obs = self._get_obs()

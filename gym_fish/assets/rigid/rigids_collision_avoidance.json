@@ -24,7 +24,7 @@
         {
             "skeleton_file": "../agents/ball_d0.2.json",
             "controllable": false,
-            "sample_num": 10000,
+            "sample_num": 1000,
             "has_buoyancy": false,
             "density":1080,
             "bladder_volume_min":0,
@@ -45,7 +45,7 @@
         {
             "skeleton_file": "../agents/ball_d0.2.json",
             "controllable": false,
-            "sample_num": 10000,
+            "sample_num": 1000,
             "has_buoyancy": false,
             "density":1080,
             "bladder_volume_min":0,
@@ -66,7 +66,7 @@
         {
             "skeleton_file": "../agents/ball_d0.2.json",
             "controllable": false,
-            "sample_num": 10000,
+            "sample_num": 1000,
             "has_buoyancy": false,
             "density":1080,
             "bladder_volume_min":0,
@@ -87,7 +87,7 @@
         {
             "skeleton_file": "../agents/ball_d0.2.json",
             "controllable": false,
-            "sample_num": 10000,
+            "sample_num": 1000,
             "has_buoyancy": false,
             "density":1080,
             "bladder_volume_min":0,
@@ -108,7 +108,7 @@
         {
             "skeleton_file": "../agents/ball_d0.2.json",
             "controllable": false,
-            "sample_num": 10000,
+            "sample_num": 1000,
             "has_buoyancy": false,
             "density":1080,
             "bladder_volume_min":0,
@@ -129,7 +129,7 @@
         {
             "skeleton_file": "../agents/ball_d0.2.json",
             "controllable": false,
-            "sample_num": 10000,
+            "sample_num": 1000,
             "has_buoyancy": false,
             "density":1080,
             "bladder_volume_min":0,

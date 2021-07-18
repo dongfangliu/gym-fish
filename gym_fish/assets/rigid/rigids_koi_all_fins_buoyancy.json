@@ -1,10 +1,10 @@
 {
     "skeletons": [
         {
-            "skeleton_file": "../agents/koi_all_fins.json",
+            "skeleton_file": "../agents/koi_all_fins_3d.json",
             "controllable": true,
             "sample_num": 10000,
-            "has_buoyancy": false,
+            "has_buoyancy": true,
             "density":1080,
             "bladder_volume_min":0,
             "bladder_volume_max":2,

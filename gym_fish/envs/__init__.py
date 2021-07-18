@@ -1,3 +1,5 @@
 from gym_fish.envs.fish_env_basic import FishEnvBasic
 from gym_fish.envs.fish_env_collision_avoidance import FishEnvCollisionAvoidance
+from gym_fish.envs.fish_env_pose_control import FishEnvPoseControl
+from gym_fish.envs.fish_env_schooling import FishEnvSchooling
 from gym_fish.envs.fish_env_vel import FishEnvVel

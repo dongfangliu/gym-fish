@@ -68,10 +68,15 @@ class underwater_agent:
             return self._dynamics.getNumDofs()+1
         else:
             return self._dynamics.getNumDofs()
-
+    @property
+    def collided(self):
+        return self._dynamics.beCollided
     @property
     def com(self):
         return self._dynamics.getCOM()
+    @property
+    def base_link(self):
+        return self.links[self.base_link_name];
     @property
     def base_link_name(self):
         return self._dynamics.baseLinkName;
